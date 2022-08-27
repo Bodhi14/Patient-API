@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Patient struct {
@@ -31,12 +32,11 @@ func setup(db *gorm.DB) {
 
 func main() {
 	router := gin.Default()
-	db, err := gorm.Open("mysql", "patient.db")
+	dsn := ""
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Can't Connect to the Database")
 	}
-	defer db.Close()
-	db.LogMode(true)
 	setup(db)
 	var patients []Patient
 	db.Find(&patients)
