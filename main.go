@@ -1,10 +1,10 @@
 package main
 
 import (
-	"net/http"
-
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"gorm.io/driver/mysql"
 )
 
 type Patient struct {
@@ -15,19 +15,33 @@ type Patient struct {
 	Message string `json:"message"`
 }
 
-var patients = []Patient{
-	{Name: "A", ID: 1, Mobile: "+919073423666", Message: "message"},
-}
+func seed(db *gorm.DB) {
+	var patients = []Patient{
+		{Name: "A", ID: 1, Mobile: "+919073423666", Message: "message"},
+	}
 
-func getData(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, patients)
+	for _, p := range patients {
+		db.Create(&p)
+	}
 }
-
-func setup(db *gorm.db) {
+func setup(db *gorm.DB) {
+	db.AutoMigrate(&Patient{})
+	seed(db)
 }
 
 func main() {
 	router := gin.Default()
-	router.GET("/patient-details", getData)
+	db, err := gorm.Open("mysql", "patient.db")
+	if err != nil {
+		panic("Can't Connect to the Database")
+	}
+	defer db.Close()
+	db.LogMode(true)
+	setup(db)
+	var patients []Patient
+	db.Find(&patients)
+	for _, p := range patients {
+		fmt.Print("Name: ", p.Name, "ID :", p.ID, "Mobile :", p.Mobile, "Message :", p.Message)
+	}
 	router.Run("localhost:8000")
 }
