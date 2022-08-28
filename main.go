@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
@@ -17,10 +18,11 @@ type Patient struct {
 	IS_SMS_SENT bool   `json:"is_sms_sent`
 }
 
+var patients = []Patient{
+	{Name: "A", ID: 1, Mobile: "+919073423666", Message: "message"},
+}
+
 func seed(db *gorm.DB) {
-	var patients = []Patient{
-		{Name: "A", ID: 1, Mobile: "+919073423666", Message: "message"},
-	}
 
 	for _, p := range patients {
 		db.Create(&p)
@@ -29,6 +31,18 @@ func seed(db *gorm.DB) {
 func setup(db *gorm.DB) {
 	db.AutoMigrate(&Patient{})
 	seed(db)
+}
+
+func getPatients(c *gin.Context) {
+	var NewPatient Patient
+
+	if err := c.BindJSON(&NewPatient); err != nil {
+		return
+	}
+
+	patients = append(patients, NewPatient)
+	c.IndentedJSON(http.StatusCreated, patients)
+
 }
 
 func main() {
@@ -44,5 +58,6 @@ func main() {
 	for _, p := range patients {
 		fmt.Println("Name: ", p.Name, "\nID :", p.ID, "\nMobile :", p.Mobile, "\nMessage :", p.Message)
 	}
+	router.GET("/patients", getPatients)
 	router.Run("localhost:8000")
 }
