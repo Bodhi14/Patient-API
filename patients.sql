@@ -1,0 +1,7 @@
+CREATE TABLE patient(  
+    ID int NOT NULL PRIMARY KEY,
+    Name VARCHAR(100),
+    Mobile VARCHAR(100),
+    Message VARCHAR(100),
+    IS_SMS_SENT BOOLEAN(100)
+);
