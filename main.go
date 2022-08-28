@@ -10,10 +10,11 @@ import (
 
 type Patient struct {
 	gorm.Model
-	Name    string `"json:patient_name"`
-	ID      int    `json:"patient_id"`
-	Mobile  string `json:"patient_mobile"`
-	Message string `json:"message"`
+	Name        string `"json:patient_name"`
+	ID          int    `json:"patient_id"`
+	Mobile      string `json:"patient_mobile"`
+	Message     string `json:"message"`
+	IS_SMS_SENT bool   `json:"is_sms_sent`
 }
 
 func seed(db *gorm.DB) {
@@ -32,7 +33,7 @@ func setup(db *gorm.DB) {
 
 func main() {
 	router := gin.Default()
-	dsn := ""
+	dsn := "host=localhost user=postgres password=admin@123 dbname=patients port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Can't Connect to the Database")
@@ -41,7 +42,7 @@ func main() {
 	var patients []Patient
 	db.Find(&patients)
 	for _, p := range patients {
-		fmt.Print("Name: ", p.Name, "ID :", p.ID, "Mobile :", p.Mobile, "Message :", p.Message)
+		fmt.Println("Name: ", p.Name, "\nID :", p.ID, "\nMobile :", p.Mobile, "\nMessage :", p.Message)
 	}
 	router.Run("localhost:8000")
 }
