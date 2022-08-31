@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,11 +14,12 @@ type Patient struct {
 	ID          int    `json:"patient_id"`
 	Mobile      string `json:"patient_mobile"`
 	Message     string `json:"message"`
-	IS_SMS_SENT bool   `json:"is_sms_sent`
+	IS_SMS_SENT bool   `json:"is_sms_sent"`
 }
 
 var patients = []Patient{
-	{Name: "A", ID: 1, Mobile: "+919073423666", Message: "message"},
+	{Name: "Bodhi", ID: 1, Mobile: "+919073423666", Message: "message 1"},
+	{Name: "Anonymous", ID: 2, Mobile: "+919836559545", Message: "message 2"},
 }
 
 func seed(db *gorm.DB) {
@@ -47,13 +47,13 @@ func getPatients(c *gin.Context) {
 
 func main() {
 	router := gin.Default()
-	dsn := "host=localhost user=postgres password=admin@123 dbname=patients port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=localhost user=postgres password=Bo14#08#02 dbname=patients port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Can't Connect to the Database")
 	}
 	setup(db)
-	var patients []Patient
+	var patients []Patient  
 	db.Find(&patients)
 	for _, p := range patients {
 		fmt.Println("Name: ", p.Name, "\nID :", p.ID, "\nMobile :", p.Mobile, "\nMessage :", p.Message)
