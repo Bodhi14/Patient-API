@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,8 +19,8 @@ type Patient struct {
 }
 
 var patients = []Patient{
-	{Name: "Bodhi", ID: 1, Mobile: "+919073423666", Message: "message 1"},
-	{Name: "Anonymous", ID: 2, Mobile: "+919836559545", Message: "message 2"},
+	{Name: "B", ID: 1, Mobile: "+919073423666", Message: "message 1", IS_SMS_SENT: false},
+	{Name: "A", ID: 2, Mobile: "+919830729594", Message: "message 2", IS_SMS_SENT: false},
 }
 
 func seed(db *gorm.DB) {
@@ -39,21 +40,19 @@ func getPatients(c *gin.Context) {
 	if err := c.BindJSON(&NewPatient); err != nil {
 		return
 	}
-
 	patients = append(patients, NewPatient)
 	c.IndentedJSON(http.StatusCreated, patients)
-
 }
 
 func main() {
 	router := gin.Default()
-	dsn := "host=localhost user=postgres password=Bo14#08#02 dbname=patients port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=127.0.0.1 user=postgres password=admin@123 dbname=patients port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Can't Connect to the Database")
 	}
 	setup(db)
-	var patients []Patient  
+	var patients []Patient
 	db.Find(&patients)
 	for _, p := range patients {
 		fmt.Println("Name: ", p.Name, "\nID :", p.ID, "\nMobile :", p.Mobile, "\nMessage :", p.Message)
